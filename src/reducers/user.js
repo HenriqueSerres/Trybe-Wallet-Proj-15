@@ -1,4 +1,4 @@
-import { LOGIN_USER } from '../actions';
+import { SAVE_EMAIL } from '../actions';
 
 const INIT_STATE = {
   email: '',
@@ -6,7 +6,7 @@ const INIT_STATE = {
 
 const user = (state = INIT_STATE, action) => {
   switch (action.type) {
-  case LOGIN_USER:
+  case SAVE_EMAIL:
     return {
       ...state,
       email: action.payload,

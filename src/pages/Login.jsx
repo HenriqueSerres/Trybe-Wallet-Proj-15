@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { loginUser } from '../actions';
+import { saveEmail } from '../actions';
 // peguei regex do site stackoverflow
 const CINCO = 5;
 
@@ -11,18 +11,20 @@ class Login extends React.Component {
     this.state = {
       isDisabled: true,
       inputSenha: '',
+      inputEmail: '',
     };
   }
 
   onSubmitButton = () => {
-    const { history } = this.props;
+    const { history, salvarEmail } = this.props;
+    const { inputEmail } = this.state;
+    salvarEmail(inputEmail);
     history.push('/carteira');
   }
 
   validInputs = () => {
-    const { email } = this.props;
-    const { inputSenha } = this.state;
-    if (this.verifyInputEmail(email) && inputSenha.length >= CINCO) {
+    const { inputSenha, inputEmail } = this.state;
+    if (this.verifyInputEmail(inputEmail) && inputSenha.length >= CINCO) {
       this.setState({
         isDisabled: false,
       });
@@ -39,15 +41,17 @@ class Login extends React.Component {
   }
 
   render() {
-    const { isDisabled, inputSenha } = this.state;
-    const { email, emailDispatch } = this.props;
+    const { isDisabled, inputSenha, inputEmail } = this.state;
     return (
       <form>
         <input
           type="text"
           name="email"
-          value={ email }
-          onChange={ emailDispatch }
+          value={ inputEmail }
+          onChange={ (event) => {
+            this.setState({ inputEmail: event.target.value });
+            this.validInputs();
+          } }
           data-testid="email-input"
         />
         <input
@@ -73,17 +77,16 @@ class Login extends React.Component {
 }
 
 Login.propTypes = {
-  emailDispatch: PropTypes.func.isRequired,
   history: PropTypes.string.isRequired,
-  email: PropTypes.string.isRequired,
+  salvarEmail: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = (state) => ({
-  email: state.user.email,
-});
-
 const mapDispatchToProps = (dispatch) => ({
-  emailDispatch: (e) => dispatch(loginUser(e)),
+  salvarEmail: (email) => dispatch(saveEmail(email)),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Login);
+// const mapDispatchToProps = (dispatch) => ({
+//   emailDispatch: (e) => dispatch(loginUser(e)),
+// });
+
+export default connect(null, mapDispatchToProps)(Login);
