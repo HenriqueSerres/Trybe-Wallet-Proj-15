@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { getCoins } from '../actions';
+import { getCoins, editDespesas, deleteDespesas } from '../actions';
 
 const URL = 'https://economia.awesomeapi.com.br/json/all';
 
@@ -16,6 +16,7 @@ class Wallet extends React.Component {
       currency: 'USD',
       method: 'Dinheiro',
       tag: 'Alimentação',
+      newId: 0,
     };
   }
 
@@ -36,7 +37,7 @@ class Wallet extends React.Component {
     this.setState({ [name]: value });
   }
 
-  // função feita com ajuda do colega Matheus Reish
+  // função feita com ajuda do colega Matheus Reush
   upDateTotal = () => {
     this.total = 0;
     const { despesas } = this.props;
@@ -51,9 +52,9 @@ class Wallet extends React.Component {
   }
 
   render() {
-    const { coins, value, id, currency, description, tag, method } = this.state;
-    const { dispatchFetchCoins, despesas, email } = this.props;
-    console.log(despesas);
+    const { coins, value, id, currency, description, tag, method, newId } = this.state;
+    const {
+      dispatchEdit, dispatchDelete, dispatchFetchCoins, despesas, email } = this.props;
     this.upDateTotal();
     return (
       <>
@@ -158,16 +159,64 @@ class Wallet extends React.Component {
         </button>
         <table>
           <thead>
-            <th>Descrição</th>
-            <th>Tag</th>
-            <th>Método de pagamento</th>
-            <th>Valor</th>
-            <th>Moeda</th>
-            <th>Câmbio utilizado</th>
-            <th>Valor convertido</th>
-            <th>Moeda de conversão</th>
-            <th>Editar/Excluir</th>
+            <tr>
+              <th>Descrição</th>
+              <th>Tag</th>
+              <th>Método de pagamento</th>
+              <th>Valor</th>
+              <th>Moeda</th>
+              <th>Câmbio utilizado</th>
+              <th>Valor convertido</th>
+              <th>Moeda de conversão</th>
+              <th>Editar/Excluir</th>
+            </tr>
           </thead>
+          <tbody>
+            {despesas.map((despesa) => (
+              <tr key={ Math.random() }>
+                <td>{ despesa.description }</td>
+                <td>{ despesa.tag }</td>
+                <td>{ despesa.method }</td>
+                <td>{ Number(despesa.value).toFixed(2) }</td>
+                <td>
+                  {
+                    despesa.exchangeRates[despesa.currency].name.split('/')[0]
+                  }
+                </td>
+                <td>
+                  {
+                    Number(despesa.exchangeRates[despesa.currency].ask).toFixed(2)
+                  }
+                </td>
+                <td>
+                  {
+                    Number(despesa.value
+                      * despesa.exchangeRates[despesa.currency].ask).toFixed(2)
+                  }
+                </td>
+                <td>Real</td>
+                <td>
+                  <button
+                    type="button"
+                    onClick={ () => {
+                      dispatchEdit(newId, {
+                        id, currency, value, description, tag, method,
+                      });
+                      this.setState({ newId: despesa.id });
+                    } }
+                  >
+                    Editar
+                  </button>
+                  <button
+                    type="button"
+                    onClick={ () => dispatchDelete(despesa.id) }
+                  >
+                    Apagar
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
         </table>
       </>
     );
@@ -176,12 +225,17 @@ class Wallet extends React.Component {
 
 Wallet.propTypes = {
   dispatchFetchCoins: PropTypes.func.isRequired,
-  despesas: PropTypes.number.isRequired,
+  dispatchEdit: PropTypes.func.isRequired,
+  dispatchDelete: PropTypes.func.isRequired,
+  despesas: PropTypes.arrayOf(PropTypes.string).isRequired,
   email: PropTypes.string.isRequired,
 };
 
 const mapDispatchToProps = (dispatch) => ({
   dispatchFetchCoins: (objeto) => dispatch(getCoins(objeto)),
+  dispatchEdit: (id, objeto) => dispatch(editDespesas(id, objeto)),
+  dispatchDelete: (objeto) => dispatch(deleteDespesas(objeto)),
+
 });
 
 const mapStateToProps = (state) => ({
