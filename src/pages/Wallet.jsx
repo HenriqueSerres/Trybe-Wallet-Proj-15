@@ -210,6 +210,7 @@ class Wallet extends React.Component {
                   <button
                     type="button"
                     onClick={ () => dispatchDelete(despesa.id) }
+                    data-testid="delete-btn"
                   >
                     Apagar
                   </button>
@@ -234,7 +235,7 @@ Wallet.propTypes = {
 const mapDispatchToProps = (dispatch) => ({
   dispatchFetchCoins: (objeto) => dispatch(getCoins(objeto)),
   dispatchEdit: (id, objeto) => dispatch(editDespesas(id, objeto)),
-  dispatchDelete: (objeto) => dispatch(deleteDespesas(objeto)),
+  dispatchDelete: (id) => dispatch(deleteDespesas(id)),
 
 });
 

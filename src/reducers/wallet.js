@@ -44,14 +44,14 @@ const wallet = (state = INIT_STATE, action) => {
     return {
       ...state,
       expenses: state.expenses.map((expense) => (
-        expense.id === action.payload.id
+        expense.id === action.payload
           ? editarDespesas(expense, action.objeto) : expense
       )),
     };
   case DELETE_DESPESA:
     return {
       ...state,
-      expenses: state.expenses.filter((expense) => expense.id !== action.payload.id),
+      expenses: state.expenses.filter((expense) => expense.id !== action.payload),
     };
   default:
     return state;
