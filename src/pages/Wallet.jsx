@@ -198,6 +198,7 @@ class Wallet extends React.Component {
                 <td>
                   <button
                     type="button"
+                    data-testid="edit-btn"
                     onClick={ () => {
                       dispatchEdit(newId, {
                         id, currency, value, description, tag, method,
